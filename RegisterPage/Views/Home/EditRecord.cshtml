@@ -1,0 +1,118 @@
+﻿
+@{
+    ViewBag.Title = "EditRecord";
+}
+
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<style>
+    .outer {
+        min-height: 400px;
+        border: 2px solid black;
+        border-radius: 10px;
+        margin: 20px;
+        background:whitesmoke;
+    }
+</style>
+<div class="container">
+    <h1 style="text-align:center;font-weight:bold;color:red;">Edit Form</h1>
+
+    <div class="row outer">
+        <form method="post">
+            <div class="row" style="margin:20px;">
+                <div class="col-sm-6 ">
+                    Full Name:<br />
+                    <input class="form-control" value="@Model.Rows[0]["first_name"]" placeholder="Enter the first name" name="fname" type="text" /><br />
+                    <input class="form-control" value="@Model.Rows[0]["middile_name"]" placeholder="Enter the middile name" name="mname" type="text" /><br />
+                    <input class="form-control" value="@Model.Rows[0]["last_name"]" placeholder="Enter the last name" name="lname" type="text" /><br />
+                    Matarial Status:<br />
+                    <select class="form-control" name="mstatus">
+                        @{
+                            foreach (System.Data.DataRow data in ViewBag.data1.Rows)
+                            {
+                                <option>@data["Metarial_Status"]</option>
+                            }
+                        }
+                    </select><br />
+                    Date of Birth:<br />
+                    <input type="date" value="@Model.Rows[0]["date_of_birth"]" class="form-control" name="dob" /><br />
+                    Email:<br />
+                    <input type="email" value="@Model.Rows[0]["email"]" class="form-control" name="email" placeholder="Email" />
+                </div>
+                <div class="col-sm-6">
+                    Mobile Number:<br />
+                    <input type="number" value="@Model.Rows[0]["mobile_number"]" class="form-control" name="mnumber" value="8860407593" /><br />
+                    Home  Address:<br />
+                    <input type="text" value="@Model.Rows[0]["address"]" class="form-control" name="address" /><br />
+                    <select class="form-control" name="country" id="Hello">
+                        <option>--Select Country--</option>
+                        @{
+                            foreach (System.Data.DataRow data in ViewBag.data2.Rows)
+                            {
+                                <option value="@data["id"]">@data["country"]</option>
+
+                            }
+                        }
+                    </select><br />
+                    <select class="form-control" name="state" id="statebind">
+                        <option>State</option>
+                    </select><br />
+                    <select class="form-control" name="city" id="citybind">
+                        <option>City</option>
+                    </select><br />
+
+                    <input type="number" value="@Model.Rows[0]["zip_code"]" name="zipcode" placeholder="Zip Code" class="form-control" /><br />
+                    <input type="submit" value="Update Data" class="form-control" style="background:navy; color:white;font-size:15px;font-family:serif;" />
+
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        $("#Hello").change(function () {
+            var id = $(this).val()
+            $.ajax({
+                url: "/home/stateBind/" + id,
+                type: "get",
+                dataType: "json",
+                success: function (data) {
+
+                    var state = $.parseJSON(data);
+                    //console.log(state)
+                    $("#statebind").empty();
+                    $.each(state, function (index, st) {
+                        $("#statebind").append("<option value=" + st.id + ">" + st.state_name + "</option>")
+                        console.log(st)
+                    })
+
+                },
+                error: function () {
+                    console.log("error")
+                }
+            })
+        })
+        $("#statebind").change(function () {
+            var id = $(this).val()
+            // alert(id)
+            $.ajax({
+                url: "/home/CityBind/" + id,
+                type: "get",
+                dataType: "json",
+                success: function (data) {
+
+                    var state = $.parseJSON(data);
+                    //console.log(state)
+                    $("#citybind").empty();
+                    $.each(state, function (index, st) {
+                        $("#citybind").append("<option >" + st.city_name + "</option>")
+                        console.log(st)
+                    })
+
+                },
+                error: function () {
+                    console.log("error")
+                }
+            })
+
+        })
+    </script>

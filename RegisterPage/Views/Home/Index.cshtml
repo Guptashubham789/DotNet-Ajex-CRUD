@@ -1,0 +1,200 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<style>
+    .outer {
+        min-height: 400px;
+        border: 2px solid black;
+        border-radius: 10px;
+        margin: 20px;
+        background:whitesmoke;
+    }
+</style>
+<div class="container">
+    <h1 style="text-align:center;font-weight:bold;color:red;">Register Form</h1>
+    <div class="row outer">
+        <form method="post">
+            <div class="row" style="margin:20px;">
+                <div class="col-sm-6 ">
+                    Full Name:<br />
+                    <input class="form-control" required placeholder="Enter the first name" name="fname" type="text" /><br />
+                    <input class="form-control" placeholder="Enter the middile name" name="mname" type="text" /><br />
+                    <input class="form-control" required placeholder="Enter the last name" name="lname" type="text" /><br />
+                    Matarial Status:<br />
+                    <select class="form-control" name="mstatus">
+                        @{
+                            foreach (System.Data.DataRow data in ViewBag.data1.Rows)
+                            {
+                                <option>@data["Metarial_Status"]</option>
+                            }
+                        }
+                    </select><br />
+                    Date of Birth:<br />
+                    <input type="date" class="form-control" name="dob" /><br />
+                    Email:<br />
+                    <input type="email" required class="form-control" name="email" placeholder="Email" />
+                </div>
+                <div class="col-sm-6">
+                    Mobile Number:<br />
+                    <input type="number" required class="form-control" name="mnumber" value="8860407593" /><br />
+                    Home  Address:<br />
+                    <input type="text" class="form-control" name="address" /><br />
+                    <select class="form-control" name="country" id="Hello">
+                    <option>--Select Country--</option>
+                        @{
+                            foreach (System.Data.DataRow data in ViewBag.data2.Rows)
+                            {
+                                <option value="@data["id"]">@data["country"]</option>
+
+                            }
+                        }
+                    </select><br />
+                    <select class="form-control" name="state" id="statebind">
+                        <option>State</option>
+                    </select><br />
+                    <select class="form-control" name="city" id="citybind">
+                        <option>City</option>
+                    </select><br />
+
+                    <input type="number" name="zipcode" placeholder="Zip Code" class="form-control" /><br />
+                    <input type="submit" value="Register" class="form-control" style="background:navy; color:white;font-size:15px;font-family:serif;" />
+
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="row outer" >
+        <table style="margin:0px auto" class="table-bordered table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>First Name</th>
+                    <th>Middile Name</th>
+                    <th>Last Name</th>
+                    <th>Material Status</th>
+                    <th>Data Of Birth</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Address</th>
+                    <th>Country</th>
+                    <th>State</th>
+                    <th>City</th>
+                    <th>Zip Code</th>
+                    <th colspan="2" style="text-align:center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                    @{ 
+                        foreach(System.Data.DataRow data in Model.Rows)
+            {
+                                    <tr id="tr_@data["id"]">
+                                        <td>@data["id"]</td>
+                                        <td>@data["first_name"]</td>
+                                        <td>@data["middile_name"]</td>
+                                        <td>@data["last_name"]</td>
+                                        <td>@data["material_status"]</td>
+                                        <td>@data["date_of_birth"]</td>
+                                        <td>@data["email"]</td>
+                                        <td>@data["mobile_number"]</td>
+                                        <td>@data["address"]</td>
+                                        <td>@data["country"]</td>
+                                        <td>@data["state_name"]</td>
+                                        <td>@data["city"]</td>
+                                        <td>@data["zip_code"]</td>
+                                        <td>
+                                            <button class="bg-danger" onclick="deleterecord(@data["id"])">Delete</button>
+
+                                        </td>
+                                        <td>
+                                            <a href="/home/editRecord/@data["id"]">
+                                                <button class="bg-success">Edit</button>
+                                            </a>
+
+                                        </td>
+                                        <td>
+                                            <a href="/home/viewRecord/@data["id"]">
+                                                <button class="bg-success">View </button>
+                                            </a>
+                                        </td>
+
+                                    </tr>
+            }
+                    }
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $("#Hello").change(function () {
+        var id = $(this).val()
+        $.ajax({
+            url: "/home/stateBind/" + id,
+            type: "get",
+            dataType: "json",
+            success: function (data) {
+              
+                var state = $.parseJSON(data);
+                //console.log(state)
+                $("#statebind").empty();
+                $.each(state, function (index, st) {                  
+                    $("#statebind").append("<option value="+st.id+">" + st.state_name + "</option>")
+                    console.log(st)
+                })
+
+            },
+            error: function () {
+                console.log("error")
+            }
+        })
+    })
+    $("#statebind").change(function () {
+        var id = $(this).val()
+       // alert(id)
+        $.ajax({
+            url: "/home/CityBind/" + id,
+            type: "get",
+            dataType: "json",
+            success: function (data) {
+
+                var state = $.parseJSON(data);
+                //console.log(state)
+                $("#citybind").empty();
+                $.each(state, function (index, st) {
+                    $("#citybind").append("<option >" + st.city_name + "</option>")
+                    console.log(st)
+                })
+
+            },
+            error: function () {
+                console.log("error")
+            }
+        })
+     
+    })
+    function Delete() {
+        return confirm("Are you sure to delete this record !")
+    }
+    function deleterecord(id) {
+        var dat = Delete()
+        if (dat == false)
+            return;
+        $.ajax({
+            url: '/home/deleterecord/' + id,
+            type: 'post',
+            dataType: 'json',
+            success: function (res) {
+                //alert(res)
+                $("#tr_" + id).hide();
+            },
+            error: function () {
+                alert('Something going wrong')
+            }
+        })
+
+    };
+  
+</script>
